@@ -227,6 +227,11 @@ controller_interface::return_type DiffDriveController::update(
   tf2::Quaternion orientation;
   orientation.setRPY(0.0, 0.0, odometry_.getHeading());
 
+  // Deal with clock turning back, which may happen if use_sim_time
+  // is set through the controller_manager.
+  if (time < previous_publish_timestamp_)
+    previous_publish_timestamp_ = time;
+
   if (previous_publish_timestamp_ + publish_period_ < time)
   {
     previous_publish_timestamp_ += publish_period_;
